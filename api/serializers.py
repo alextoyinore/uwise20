@@ -3,54 +3,53 @@ from .models import *
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
-        models = User
+        model = User
         fields = '__all__'
 
 
 class InstructorSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
-        models = Instructor
+        model = Instructor
         fields = '__all__'
         depth = 1
 
 
 class ClientSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
-        models = Client
+        model = Client
         fields = '__all__'
         depth = 1
 
 
 class RequestSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
-        models = Request
+        model = Request
         fields = '__all__'
         depth = 1
 
 
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
-        models = Category
+        model = Category
         fields = '__all__'
 
 
 class JobSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
-        models = Job
+        model = Job
         fields = '__all__'
         depth = 1
 
 
 class CourseSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
-        models = Course
+        model = Course
         fields = '__all__'
         depth = 1
 
 
 class BlogSerializer(serializers.HyperlinkedModelSerializer):
-    models = Blog
+    model = Blog
     fields = '__all__'
     depth = 1
 
-    

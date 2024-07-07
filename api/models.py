@@ -15,8 +15,8 @@ class User(models.Model):
     city = models.CharField(max_length=200, null=True)
     state = models.CharField(max_length=200, null=True)
     nationality = models.CharField(max_length=200, null=True)
-    date_joined = models.DateTimeField(auto_now=True, auto_now_add=True)
-    slug = models.SlugField()
+    date_joined = models.DateTimeField(auto_now=True)
+    slug = models.SlugField(unique=True)
 
     def __str__(self) -> str:
         return super().__str__()
@@ -66,7 +66,7 @@ class Client(models.Model):
 class Request(models.Model):
     user = models.ForeignKey(User, on_delete=models.PROTECT, null=False)
     title = models.CharField(max_length=200, null=False)
-    slug = models.SlugField()
+    slug = models.SlugField(unique=True)
     date_created = models.DateTimeField(auto_now=False, auto_now_add=False)
 
     def __str__(self) -> str:
@@ -83,6 +83,8 @@ class Category(models.Model):
     title = models.CharField(max_length=200, null=False)
     icon = models.URLField(null=True)
     date_created = models.DateTimeField(auto_now=False, auto_now_add=False)
+    slug = models.SlugField(unique=True)
+
 
     def __str__(self) -> str:
         return super().__str__()
@@ -97,12 +99,15 @@ class Category(models.Model):
 class Job(models.Model):
     client = models.ForeignKey(Client, on_delete=models.PROTECT)
     title = models.CharField(max_length=250, null=False)
+    slug = models.SlugField(unique=True)
 
 
 class Course(models.Model):
     instructor = models.ForeignKey(Instructor, on_delete=models.PROTECT, null=False)
     title = models.CharField(max_length=250, null=False)
+    slug = models.SlugField(unique=True)
+
 
 class Blog(models.Model):
-    pass
+    slug = models.SlugField(unique=True)
 
