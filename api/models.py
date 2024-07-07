@@ -1,10 +1,15 @@
 from typing import Iterable
 from django.db import models
+from django.conf import settings
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+from rest_framework.authtoken.models import Token
 
 # Create your models here.
 
 class User(models.Model):
     email = models.EmailField(max_length=250, null=False, unique=True)
+    password = models.CharField(max_length=250, null=False)
     username = models.CharField(max_length=100, null=True, unique=True)
     firstname = models.CharField(max_length=200, null=True)
     lastname = models.CharField(max_length=200, null=True)
@@ -17,6 +22,11 @@ class User(models.Model):
     nationality = models.CharField(max_length=200, null=True)
     date_joined = models.DateTimeField(auto_now=True)
     slug = models.SlugField(unique=True)
+
+    REQUIRED_FIELDS = []
+    USERNAME_FIELD = 'email'
+    is_anonymous = None
+    is_authenticated = None
 
     def __str__(self) -> str:
         return super().__str__()
@@ -110,4 +120,10 @@ class Course(models.Model):
 
 class Blog(models.Model):
     slug = models.SlugField(unique=True)
+
+
+@receiver(post_save, sender=settings.AUTH_USER_MODEL)
+def create_auth_token(sender, instance=None, created=False, **kwargs):
+    if created:
+        Token.objects.create(user=instance)
 

@@ -128,3 +128,5 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Customization
 
+AUTH_USER_MODEL = 'api.User'
+
