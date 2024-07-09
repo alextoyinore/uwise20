@@ -4,6 +4,7 @@ from django.conf import settings
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from rest_framework.authtoken.models import Token
+from bcrypt import hashpw
 
 # Create your models here.
 
@@ -21,15 +22,33 @@ class User(models.Model):
     state = models.CharField(max_length=200, null=True)
     nationality = models.CharField(max_length=200, null=True)
     date_joined = models.DateTimeField(auto_now=True)
-    slug = models.SlugField(unique=True)
+    slug = models.SlugField(unique=True, null=True)
+    is_staff = models.BooleanField(default=False)
+    is_admin = models.BooleanField(default=False)
+    is_superadmin = models.BooleanField(default=False)
+
 
     REQUIRED_FIELDS = []
-    USERNAME_FIELD = 'email'
+    USERNAME_FIELD = 'username'
     is_anonymous = None
     is_authenticated = None
 
+
     def __str__(self) -> str:
         return super().__str__()
+    
+    def save(self, *args, **kwargs):
+        email_username = self.email.split('@')[0]
+        email_domain = self.email.split('@')[1].split('.')[0]
+        self.username = email_username + email_domain
+        self.slug = self.username
+        # self.password = hashpw(self.password)
+        super(User, self).save(*args, **kwargs)
+
+    @receiver(post_save, sender=settings.AUTH_USER_MODEL)
+    def create_auth_token(sender, instance=None, created=False, **kwargs):
+        if created:
+            Token.objects.create(user=instance)
     
     class Meta:
         db_table = 'Users'
@@ -122,8 +141,4 @@ class Blog(models.Model):
     slug = models.SlugField(unique=True)
 
 
-@receiver(post_save, sender=settings.AUTH_USER_MODEL)
-def create_auth_token(sender, instance=None, created=False, **kwargs):
-    if created:
-        Token.objects.create(user=instance)
 

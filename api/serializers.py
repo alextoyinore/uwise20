@@ -4,8 +4,10 @@ from .models import *
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = '__all__'
-        # exclude = ['password']
+        exclude = ['password']
+
+    # def create(self, validated_data):
+    #     return super().create(validated_data)
 
 
 class InstructorSerializer(serializers.HyperlinkedModelSerializer):
