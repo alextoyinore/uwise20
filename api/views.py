@@ -5,8 +5,8 @@ from .serializers import *
 
 # Create your views here.
 
-def obtain_auth_token():
-    pass
+# def obtain_auth_token():
+#     pass
 
 class UserCreateListView(generics.ListCreateAPIView):
     queryset = User.objects.all()

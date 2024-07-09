@@ -1,10 +1,4 @@
-from typing import Iterable
 from django.db import models
-from django.conf import settings
-from django.db.models.signals import post_save
-from django.dispatch import receiver
-from rest_framework.authtoken.models import Token
-from bcrypt import hashpw
 
 # Create your models here.
 
@@ -27,7 +21,6 @@ class User(models.Model):
     is_admin = models.BooleanField(default=False)
     is_superadmin = models.BooleanField(default=False)
 
-
     REQUIRED_FIELDS = []
     USERNAME_FIELD = 'username'
     is_anonymous = None
@@ -36,19 +29,6 @@ class User(models.Model):
 
     def __str__(self) -> str:
         return super().__str__()
-    
-    def save(self, *args, **kwargs):
-        email_username = self.email.split('@')[0]
-        email_domain = self.email.split('@')[1].split('.')[0]
-        self.username = email_username + email_domain
-        self.slug = self.username
-        # self.password = hashpw(self.password)
-        super(User, self).save(*args, **kwargs)
-
-    @receiver(post_save, sender=settings.AUTH_USER_MODEL)
-    def create_auth_token(sender, instance=None, created=False, **kwargs):
-        if created:
-            Token.objects.create(user=instance)
     
     class Meta:
         db_table = 'Users'
@@ -95,8 +75,9 @@ class Client(models.Model):
 class Request(models.Model):
     user = models.ForeignKey(User, on_delete=models.PROTECT, null=False)
     title = models.CharField(max_length=200, null=False)
+    category = models.ForeignKey('Category', on_delete=models.DO_NOTHING)
     slug = models.SlugField(unique=True)
-    date_created = models.DateTimeField(auto_now=False, auto_now_add=False)
+    date_created = models.DateTimeField(auto_now=True)
 
     def __str__(self) -> str:
         return super().__str__()
@@ -111,7 +92,8 @@ class Request(models.Model):
 class Category(models.Model):
     title = models.CharField(max_length=200, null=False)
     icon = models.URLField(null=True)
-    date_created = models.DateTimeField(auto_now=False, auto_now_add=False)
+    description = models.TextField(null=True)
+    date_created = models.DateTimeField(auto_now=True)
     slug = models.SlugField(unique=True)
 
 
@@ -128,17 +110,44 @@ class Category(models.Model):
 class Job(models.Model):
     client = models.ForeignKey(Client, on_delete=models.PROTECT)
     title = models.CharField(max_length=250, null=False)
+    category = models.ForeignKey(Category, on_delete=models.DO_NOTHING)
+    short_description = models.TextField(null=True)
+    long_description = models.TextField(null=False)
+    date_created = models.DateTimeField(auto_now=True)
     slug = models.SlugField(unique=True)
+
+    def __str__(self) -> str:
+        return super().__str__()
+    
+    class Meta:
+        db_table = 'Jobs'
+        managed = True
+        verbose_name = 'job'
+        verbose_name_plural = 'jobs'
 
 
 class Course(models.Model):
-    instructor = models.ForeignKey(Instructor, on_delete=models.PROTECT, null=False)
-    title = models.CharField(max_length=250, null=False)
+    instructors = models.JSONField()
+    title = models.CharField(max_length=250, null=False, unique=True)
+    category = models.ForeignKey(Category, on_delete=models.DO_NOTHING)
+    short_description = models.TextField(null=False)
+    long_description = models.TextField(null=True)
+    skills_to_gain = models.JSONField(null=False)
+    topics = models.JSONField(null=False)
+    date_created = models.DateTimeField(auto_now=True)
     slug = models.SlugField(unique=True)
+
+    def __str__(self) -> str:
+        return super().__str__()
+    
+    class Meta:
+        db_table = 'Courses'
+        managed = True
+        verbose_name = 'course'
+        verbose_name_plural = 'courses'
 
 
 class Blog(models.Model):
     slug = models.SlugField(unique=True)
-
 
 
