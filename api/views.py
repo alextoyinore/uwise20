@@ -17,27 +17,6 @@ class UserDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
 
-
-class InstructorCreateListView(generics.ListCreateAPIView):
-    queryset = Instructor.objects.all()
-    serializer_class = InstructorSerializer
-
-
-class InstructorDetailView(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Instructor.objects.all()
-    serializer_class = InstructorSerializer
-
-
-class ClientCreateListView(generics.ListCreateAPIView):
-    queryset = Client.objects.all()
-    serializer_class = ClientSerializer
-
-
-class ClientDetailView(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Client.objects.all()
-    serializer_class = ClientSerializer
-
-
 class RequestCreateListView(generics.ListCreateAPIView):
     queryset = Request.objects.all()
     serializer_class = RequestSerializer

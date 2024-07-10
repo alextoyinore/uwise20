@@ -1,14 +1,11 @@
 from django.urls import path
 from .views import *
 
+
 urlpatterns = [
     # path('token/', view=obtain_auth_token),
     path('users/', view=UserCreateListView.as_view(), name='users'),
     path('user/<int:pk>', view=UserDetailView.as_view(), name='user'),
-    path('instructors/', view=InstructorCreateListView.as_view(), name='instructors'),
-    path('instructor/<int:pk>', view=InstructorDetailView.as_view(), name='instructor'),
-    path('clients/', view=ClientCreateListView.as_view(), name='clients'),
-    path('client/<int:pk>', view=ClientDetailView.as_view(), name='client'),
     path('requests/', view=RequestCreateListView.as_view(), name='requests'),
     path('request/<int:pk>', view=RequestDetailView.as_view(), name='request'),
     path('categories/', view=CategoryCreateListView.as_view(), name='categories'),
