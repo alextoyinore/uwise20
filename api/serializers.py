@@ -8,8 +8,8 @@ from rest_framework.authtoken.models import Token
 
 class UserSerializer(serializers.ModelSerializer):
     token = serializers.SerializerMethodField()
-    slug = serializers.SerializerMethodField()
-    username = serializers.SerializerMethodField()
+    # slug = serializers.SerializerMethodField()
+    # username = serializers.SerializerMethodField()
 
     class Meta:
         model = User
@@ -21,18 +21,29 @@ class UserSerializer(serializers.ModelSerializer):
         token, created = Token.objects.get_or_create(user=obj)
         return token.key
     
-    def get_slug(self, obj):
-        username = obj.email.split('@')[0]
-        username = strip_sc(username)
-        return f'{username}{obj.id}'
+    # def get_slug(self, obj):
+    #     username = obj.email.split('@')[0]
+    #     username = strip_sc(username)
+    #     return f'{username}{obj.id}'
     
-    def get_username(self, obj):
-        username = obj.email.split('@')[0]
-        username = strip_sc(username)
-        return f'{username}{obj.id}'
+    # def get_username(self, obj):
+    #     username = obj.email.split('@')[0]
+    #     username = strip_sc(username)
+    #     return f'{username}{obj.id}'
     
     def create(self, validated_data):
         validated_data['password'] = make_password(validated_data['password'])  # Hash the password
+        initial_data = self.initial_data
+        
+        email = initial_data.get('email')
+        username = email.split('@')[0]
+        username = strip_sc(username)
+
+        # Create Username
+        validated_data['username'] = f'{username}{User.objects.count() + 1}'
+        # Create Slug
+        validated_data['slug'] = f'{username}{User.objects.count() + 1}'
+        
         return super().create(validated_data)
     
     def update(self, instance, validated_data):
