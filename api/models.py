@@ -21,7 +21,6 @@ class User(models.Model):
     is_admin = models.BooleanField(default=False)
     is_superadmin = models.BooleanField(default=False)
 
-
     # Instructor Details
     school_name = models.CharField(max_length=250, null=True)
     school_logo = models.URLField(null=True)
@@ -54,8 +53,7 @@ class Category(models.Model):
     icon = models.URLField(null=True)
     description = models.TextField(null=True)
     date_created = models.DateTimeField(auto_now=True)
-    slug = models.SlugField(unique=True)
-
+    slug = models.SlugField(unique=True, null=True)
 
     def __str__(self) -> str:
         return super().__str__()
@@ -69,9 +67,9 @@ class Category(models.Model):
 
 class Request(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    title = models.CharField(max_length=200, null=False)
+    title = models.CharField(max_length=250, null=False)
     category = models.ForeignKey(Category, on_delete=models.DO_NOTHING, null=True)
-    slug = models.SlugField(unique=True)
+    slug = models.SlugField(unique=True, null=True)
     date_created = models.DateTimeField(auto_now=True)
 
     def __str__(self) -> str:
@@ -85,13 +83,13 @@ class Request(models.Model):
 
 
 class Job(models.Model):
-    client = models.ForeignKey(User, on_delete=models.PROTECT)
-    title = models.CharField(max_length=250, null=False)
+    client = models.ForeignKey(User, on_delete=models.CASCADE)
+    title = models.CharField(max_length=250)
     category = models.ForeignKey(Category, on_delete=models.DO_NOTHING, null=True)
     short_description = models.TextField(null=True)
-    long_description = models.TextField(null=False)
+    long_description = models.TextField()
     date_created = models.DateTimeField(auto_now=True)
-    slug = models.SlugField(unique=True)
+    slug = models.SlugField(unique=True, null=True)
 
     def __str__(self) -> str:
         return super().__str__()
@@ -104,20 +102,21 @@ class Job(models.Model):
 
 
 class Course(models.Model):
+    title = models.CharField(max_length=250, unique=True)
     instructors = models.JSONField()
-    title = models.CharField(max_length=250, null=False, unique=True)
-    category = models.ForeignKey(Category, on_delete=models.DO_NOTHING, null=True)
+    categories = models.JSONField()
     price = models.DecimalField(max_digits=11, decimal_places=2)
-    short_description = models.TextField(null=False)
-    long_description = models.TextField(null=True)
-    skills_to_gain = models.JSONField(null=False)
-    topics = models.JSONField(null=False)
+    intro_video = models.URLField(null=True)
+    short_description = models.TextField(null=True)
+    long_description = models.TextField()
+    skills_to_gain = models.JSONField(null=True)
+    topics = models.JSONField(null=True)
     date_created = models.DateTimeField(auto_now=True)
-    slug = models.SlugField(unique=True)
+    slug = models.SlugField(unique=True, null=True)
 
     def __str__(self) -> str:
         return super().__str__()
-    
+
     class Meta:
         db_table = 'Courses'
         managed = True
@@ -126,11 +125,20 @@ class Course(models.Model):
 
 
 class Blog(models.Model):
-    authors = models.JSONField()
-    title = models.CharField(max_length=250, null=False, unique=True)
+    authors = models.JSONField(null=False)
+    title = models.CharField(max_length=250, unique=True)
     excerpt = models.TextField()
     content = models.JSONField()
-    category = models.ForeignKey(Category, on_delete=models.DO_NOTHING, null=True)
+    categories = models.JSONField()
     date_published = models.DateTimeField(auto_now=True, auto_created=True)
-    slug = models.SlugField(unique=True)
+    slug = models.SlugField(unique=True, null=True)
+
+    def __str__(self) -> str:
+        return super().__str__()
+    
+    class Meta:
+        db_table = 'Blogs'
+        managed = True
+        verbose_name = 'blog'
+        verbose_name_plural = 'blogs'
 

@@ -3,7 +3,6 @@ from .views import *
 
 
 urlpatterns = [
-    # path('token/', view=obtain_auth_token),
     path('users/', view=UserCreateListView.as_view(), name='users'),
     path('user/<int:pk>', view=UserDetailView.as_view(), name='user'),
     path('requests/', view=RequestCreateListView.as_view(), name='requests'),
@@ -17,3 +16,4 @@ urlpatterns = [
     path('blogs/', view=BlogCreateListView.as_view(), name='blogs'),
     path('blog/<int:pk>', view=BlogDetailView.as_view(), name='blog'),
 ]
+

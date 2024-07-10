@@ -7,8 +7,6 @@ from rest_framework.authtoken.models import Token
 
 class UserSerializer(serializers.ModelSerializer):
     token = serializers.SerializerMethodField()
-    # slug = serializers.SerializerMethodField()
-    # username = serializers.SerializerMethodField()
 
     class Meta:
         model = User
@@ -20,15 +18,6 @@ class UserSerializer(serializers.ModelSerializer):
         token, created = Token.objects.get_or_create(user=obj)
         return token.key
     
-    # def get_slug(self, obj):
-    #     username = obj.email.split('@')[0]
-    #     username = strip_sc(username)
-    #     return f'{username}{obj.id}'
-    
-    # def get_username(self, obj):
-    #     username = obj.email.split('@')[0]
-    #     username = strip_sc(username)
-    #     return f'{username}{obj.id}'
     
     def create(self, validated_data):
         validated_data['password'] = make_password(validated_data['password'])  # Hash the password
@@ -79,73 +68,65 @@ class UserSerializer(serializers.ModelSerializer):
         
         return representation
 
-
-class RequestSerializer(serializers.HyperlinkedModelSerializer):
-    slug = serializers.SerializerMethodField()
-
-    class Meta:
-        model = Request
-        fields = '__all__'
-        depth = 1
-
-    def get_slug(self, obj):
-        return strip_sc(obj.title)
-
-
 class CategorySerializer(serializers.ModelSerializer):
-    slug = serializers.SerializerMethodField()
-
     class Meta:
         model = Category
         fields = '__all__'
-
-    def get_slug(self, obj):
-        return strip_sc(obj.title)
     
     def create(self, validated_data):
         initial_data = self.initial_data
-        title = initial_data.get('title')
-        validated_data['slug'] = f'{title}'
+        title = strip_sc(initial_data.get('title'))
+        validated_data['slug'] = f'{title}{Category.objects.count() + 1}'
         return super().create(validated_data)
 
 
-class JobSerializer(serializers.HyperlinkedModelSerializer):
-    slug = serializers.SerializerMethodField()
+class RequestSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Request
+        fields = '__all__'
+    
+    def create(self, validated_data):
+        initial_data = self.initial_data
+        title = strip_sc(initial_data.get('title'))
+        validated_data['slug'] = f'{title}{Request.objects.count() + 1}'
+        return super().create(validated_data)
 
+
+class JobSerializer(serializers.ModelSerializer):
     class Meta:
         model = Job
         fields = '__all__'
-        depth = 1
-
-    def get_slug(self, obj):
-        return strip_sc(obj.title)
     
     def create(self, validated_data):
-        # if not User.objects.get(pk=validated_data['client']).account_type == 3:
-        #     raise serializers.ValidationError('You need a client account to post a job')
+        if not User.objects.get(pk=validated_data['client'].id).account_type == 3:
+            raise serializers.ValidationError({'detail':'You need a client account to create a job'})
+
+        initial_data = self.initial_data
+        title = strip_sc(initial_data.get('title'))
+        validated_data['slug'] = f'{title}{Job.objects.count() + 1}'
         return super().create(validated_data)
 
 
-class CourseSerializer(serializers.HyperlinkedModelSerializer):
-    slug = serializers.SerializerMethodField()
-
+class CourseSerializer(serializers.ModelSerializer):
     class Meta:
         model = Course
         fields = '__all__'
-        depth = 1
+    
+    def create(self, validated_data):
+        initial_data = self.initial_data
+        title = strip_sc(initial_data.get('title'))
+        validated_data['slug'] = f'{title}{Course.objects.count() + 1}'
+        return super().create(validated_data)
 
-    def get_slug(self, obj):
-        return strip_sc(obj.title)
 
-
-class BlogSerializer(serializers.HyperlinkedModelSerializer):
-    slug = serializers.SerializerMethodField()
-
+class BlogSerializer(serializers.ModelSerializer):
     class Meta:
         model = Blog
         fields = '__all__'
-        depth = 1
-
-    def get_slug(self, obj):
-        return strip_sc(obj.title)
+    
+    def create(self, validated_data):
+        initial_data = self.initial_data
+        title = strip_sc(initial_data.get('title'))
+        validated_data['slug'] = f'{title}{Blog.objects.count() + 1}'
+        return super().create(validated_data)
 
