@@ -47,9 +47,10 @@ class User(models.Model):
         verbose_name = 'user'
         verbose_name_plural = 'users'
 
+
 class Category(models.Model):
-    user = models.ForeignKey(User, on_delete=models.DO_NOTHING)
-    title = models.CharField(max_length=250, null=False)
+    staff = models.ForeignKey(User, on_delete=models.DO_NOTHING)
+    title = models.CharField(max_length=250, null=False, unique=True)
     icon = models.URLField(null=True)
     description = models.TextField(null=True)
     date_created = models.DateTimeField(auto_now=True)
