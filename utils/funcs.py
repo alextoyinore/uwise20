@@ -1,4 +1,5 @@
 import bcrypt
+from api.models import User
 
 def hash_password(password):
     # Generate a salt and hash the password
@@ -17,3 +18,6 @@ def strip_sc(input_str):
     cleaned_str = ''.join(char for char in input_str if char in allowed_characters)
     return cleaned_str
 
+
+def authenticate(email, password):
+    return User.objects.filter(email=email, password=password)

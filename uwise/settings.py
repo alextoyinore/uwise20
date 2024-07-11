@@ -140,7 +140,24 @@ PASSWORD_HASHERS = [
 ]
 
 REST_FRAMEWORK = {
+
+    # PAGINATION
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': getenv('PAGE_SIZE', 10),
+
+    # THROTTLE
+    'DEFAULT_THROTTLE_CLASSES': [
+        'rest_framework.throttling.AnonRateThrottle',
+        'rest_framework.throttling.UserRateThrottle'
+    ],
+    'DEFAULT_THROTTLE_RATES': {
+        'anon': '20/minute',
+        'user': '50/minute'
+    },
+
+    # AUTHENTICATION
+    'DEFAULT_PERMISSION_CLASSES': [
+        # 'rest_framework.permissions.IsAuthenticated',
+    ],
 }
 

@@ -2,6 +2,12 @@ from django.shortcuts import render
 from rest_framework import generics
 from .models import *
 from .serializers import *
+from rest_framework.authtoken.models import Token
+from rest_framework.response import Response
+from rest_framework.views import APIView
+from rest_framework.permissions import AllowAny
+from rest_framework import status
+from utils.funcs import authenticate
 
 # Create your views here.
 
@@ -65,3 +71,18 @@ class BlogCreateListView(generics.ListCreateAPIView):
 class BlogDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Blog.objects.all()
     serializer_class = BlogSerializer
+
+
+class LoginView(APIView):
+    permission_classes = [AllowAny]
+    serializers = UserSerializer
+
+    def post(self, request, *args, **kwargs):
+        email = request.data.get('email')
+        password = request.data.get('password')
+        user = authenticate(email=email, password=password)
+        print(user)
+        if user is not None:
+            return Response(user, status=status.HTTP_200_OK)
+        return Response({'error': 'Invalid Credentials'}, status=status.HTTP_400_BAD_REQUEST)
+
