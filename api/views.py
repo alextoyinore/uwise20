@@ -1,18 +1,13 @@
-from django.shortcuts import render
 from rest_framework import generics
 from .models import *
 from .serializers import *
-from rest_framework.authtoken.models import Token
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.permissions import AllowAny
 from rest_framework import status
-from utils.funcs import authenticate
+from utils.funcs import authenticate_user
 
 # Create your views here.
-
-# def obtain_auth_token():
-#     pass
 
 class UserCreateListView(generics.ListCreateAPIView):
     queryset = User.objects.all()
@@ -75,14 +70,36 @@ class BlogDetailView(generics.RetrieveUpdateDestroyAPIView):
 
 class LoginView(APIView):
     permission_classes = [AllowAny]
-    serializers = UserSerializer
 
     def post(self, request, *args, **kwargs):
         email = request.data.get('email')
         password = request.data.get('password')
-        user = authenticate(email=email, password=password)
-        print(user)
+        user = authenticate_user(email=email, password=password)
+
         if user is not None:
-            return Response(user, status=status.HTTP_200_OK)
+            serialized_user = UserSerializer(user)
+            # return user info
+            return Response(serialized_user.data, status=status.HTTP_200_OK)
+
         return Response({'error': 'Invalid Credentials'}, status=status.HTTP_400_BAD_REQUEST)
+    
+
+class MessageCreateView(generics.ListCreateAPIView):
+    queryset = Message.objects.all()
+    serializer_class = MessageSerializer
+
+
+class MessageDetailView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Message.objects.all()
+    serializer_class = MessageSerializer
+
+
+class CourseClassCreateListView(generics.ListCreateAPIView):
+    queryset = CourseClass.objects.all()
+    serializer_class = CourseClassSerializer
+
+
+class CourseClassDetailView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = CourseClass.objects.all()
+    serializer_class = CourseClassSerializer
 

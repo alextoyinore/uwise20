@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from .models import *
 from django.contrib.auth.hashers import make_password
-from utils.funcs import hash_password, strip_sc
+from utils.funcs import hash_it, strip_sc
 from rest_framework.authtoken.models import Token
 
 
@@ -129,5 +129,29 @@ class BlogSerializer(serializers.ModelSerializer):
         initial_data = self.initial_data
         title = strip_sc(initial_data.get('title'))
         validated_data['slug'] = f'{title}{Blog.objects.count() + 1}'
+        return super().create(validated_data)
+
+
+class MessageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Message
+        fields = '__all__'
+
+    def create(self, validated_data):
+        initial_data = self.initial_data
+        title = strip_sc(initial_data.get('title'))
+        validated_data['slug'] = f'{title}{Message.objects.count() + 1}'
+        return super().create(validated_data)
+
+
+class CourseClassSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CourseClass
+        fields = '__all__'
+
+    def create(self, validated_data):
+        initial_data = self.initial_data
+        title = strip_sc(initial_data.get('title'))
+        validated_data['slug'] = f'{title}{CourseClass.objects.count() + 1}'
         return super().create(validated_data)
 

@@ -110,7 +110,8 @@ class Course(models.Model):
     short_description = models.TextField(null=True)
     long_description = models.TextField()
     skills_to_gain = models.JSONField(null=True)
-    topics = models.JSONField(null=True)
+    objectives = models.JSONField(null=True)
+    classes = models.JSONField(null=True) # classes will contain class links, time, date and other information
     date_created = models.DateTimeField(auto_now=True)
     slug = models.SlugField(unique=True, null=True)
 
@@ -141,4 +142,41 @@ class Blog(models.Model):
         managed = True
         verbose_name = 'blog'
         verbose_name_plural = 'blogs'
+
+
+class Message(models.Model):
+    sender = models.ForeignKey(User, on_delete=models.PROTECT, related_name='sender')
+    reciever = models.ForeignKey(User, on_delete=models.PROTECT, related_name='reciever')
+    content = models.JSONField()
+    date = models.DateTimeField(auto_now=False)
+    slug = models.SlugField(null=True)
+
+    def __str__(self) -> str:
+        return super().__str__()
+    
+    class Meta:
+        db_table = 'Messages'
+        managed = True
+        verbose_name = 'message'
+        verbose_name_plural = 'messages'
+
+
+class CourseClass(models.Model):
+    title = models.CharField(max_length=250)
+    description = models.TextField()
+    course = models.ForeignKey(Course, on_delete=models.PROTECT)
+    objectives = models.JSONField(null=True)
+    skills_to_learn = models.JSONField(null=True)
+    banner = models.URLField(null=True)
+    slug = models.SlugField(null=True)
+    date_created = models.DateTimeField(auto_now=False)
+
+    def __str__(self) -> str:
+        return super().__str__()
+    
+    class Meta:
+        db_table = 'CourseClasses'
+        managed = True
+        verbose_name = 'courseclass'
+        verbose_name_plural = 'courseclasses'
 
